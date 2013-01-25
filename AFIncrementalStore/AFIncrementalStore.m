@@ -318,19 +318,19 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
             }
                         
             if (!relationshipRepresentation || [relationshipRepresentation isEqual:[NSNull null]] || [relationshipRepresentation count] == 0) {
-                [managedObject setValue:nil forKey:relationshipName];
-                [backingObject setValue:nil forKey:relationshipName];
+                [managedObject setValue:nil forKey:relationship.name];
+                [backingObject setValue:nil forKey:relationship.name];
                 continue;
             }
             
             [self insertOrUpdateObjectsFromRepresentations:relationshipRepresentation ofEntity:relationship.destinationEntity fromResponse:response withContext:context error:error completionBlock:^(NSArray *managedObjects, NSArray *backingObjects) {
                 if ([relationship isToMany]) {
                     if ([relationship isOrdered]) {
-                        [managedObject setValue:[NSOrderedSet orderedSetWithArray:managedObjects] forKey:relationship.name];
-                        [backingObject setValue:[NSOrderedSet orderedSetWithArray:backingObjects] forKey:relationship.name];
+                        [[managedObject mutableOrderedSetValueForKey:relationship.name] addObjectsFromArray:managedObjects];
+                        [[backingObject mutableOrderedSetValueForKey:relationship.name] addObjectsFromArray:backingObjects];
                     } else {
-                        [managedObject setValue:[NSSet setWithArray:managedObjects] forKey:relationship.name];
-                        [backingObject setValue:[NSSet setWithArray:backingObjects] forKey:relationship.name];
+                        [[managedObject mutableSetValueForKey:relationship.name] addObjectsFromArray:managedObjects];
+                        [[backingObject mutableSetValueForKey:relationship.name] addObjectsFromArray:backingObjects];
                     }
                 } else {
                     [managedObject setValue:[managedObjects lastObject] forKey:relationship.name];
