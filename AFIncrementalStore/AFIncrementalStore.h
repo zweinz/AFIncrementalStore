@@ -66,6 +66,8 @@
  */
 @property (readonly) NSPersistentStoreCoordinator *backingPersistentStoreCoordinator;
 
+- (void) syncContext:(NSManagedObjectContext *)context;
+
 ///-----------------------
 /// @name Required Methods
 ///-----------------------
