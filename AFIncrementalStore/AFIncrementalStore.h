@@ -23,6 +23,8 @@
 #import <CoreData/CoreData.h>
 #import "AFNetworking.h"
 
+NSString * const kAFIncrementalStoreResourceIdentifierAttributeName = @"__af_resourceIdentifier";
+
 @protocol AFIncrementalStoreHTTPClient;
 
 /**
