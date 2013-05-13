@@ -531,8 +531,7 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                 
                 [insertedObject willChangeValueForKey:@"objectID"];
                 [context obtainPermanentIDsForObjects:[NSArray arrayWithObject:insertedObject] error:nil];
-                [insertedObject didChangeValueForKey:@"objectID"]; //TODO save regular context?
-                [context refreshObject:insertedObject mergeChanges:NO];
+                [insertedObject didChangeValueForKey:@"objectID"];
             } else {
                 // we're syncing
                 
@@ -587,8 +586,6 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                     [backingContext save:nil];
                     [backingContext refreshObject:backingObject mergeChanges:YES];
                 }];
-
-                [context refreshObject:updatedObject mergeChanges:NO];
             } else {
                 // we're syncing and the updated object is already a backing object
                 backingObject = updatedObject;
