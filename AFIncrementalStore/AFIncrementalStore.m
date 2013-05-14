@@ -283,7 +283,7 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
         [self executeSaveChangesRequest:saveRequest withContext:context error:&err remoteOnly:YES];
         NSLog(@"Syncing error? %@", err);
     } else {
-        NSLog(@"Nothing to sync");
+        NSLog(@"Nothing to push");
     }
 }
 
@@ -507,7 +507,8 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
     NSManagedObjectContext *backingContext = [self backingManagedObjectContext];
     
     if ([self.HTTPClient respondsToSelector:@selector(requestForInsertedObject:withID:)]) {
-        for (NSManagedObject *insertedObject in [saveChangesRequest insertedObjects]) {            
+        for (NSManagedObject *insertedObject in [saveChangesRequest insertedObjects]) {
+            
             // first, get the backing object
             __block NSManagedObject *backingObject = nil;
             __block NSString *resourceIdentifier;
@@ -527,10 +528,13 @@ withAttributeAndRelationshipValuesFromManagedObject:(NSManagedObject *)managedOb
                     [backingObject setValue:@YES forKey:kAFIncrementalStoreLocalAttributeName];
                     [self updateBackingObject:backingObject withAttributeAndRelationshipValuesFromManagedObject:insertedObject];
                     [backingContext save:nil];
+                    [backingContext refreshObject:backingObject mergeChanges:NO];
                 }];
                 
+                insertedObject.af_resourceIdentifier = resourceIdentifier;
                 [insertedObject willChangeValueForKey:@"objectID"];
-                [context obtainPermanentIDsForObjects:[NSArray arrayWithObject:insertedObject] error:nil];
+                NSError *err;
+                [context obtainPermanentIDsForObjects:@[insertedObject] error:&err];
                 [insertedObject didChangeValueForKey:@"objectID"];
             } else {
                 // we're syncing
